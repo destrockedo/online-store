@@ -1,5 +1,8 @@
 package com.pluralsight;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -18,8 +21,8 @@ public class Store {
     public static void main(String[] args) {
 
         // Create lists for inventory and the shopping cart
-        ArrayList<Product> inventory = new ArrayList<>();
-        ArrayList<Product> cart = new ArrayList<>();
+        ArrayList<product> inventory = new ArrayList<>();
+        ArrayList<product> cart = new ArrayList<>();
 
         // Load inventory from the data file (pipe-delimited: SKU|Product Name|Price|Department)
         loadInventory("products.csv", inventory);
@@ -60,27 +63,44 @@ public class Store {
      * Example line:
      * AV1051|JBL Bluetooth Speaker|89.95|Audio Video
      */
-    public static void loadInventory(String fileName, ArrayList<Product> inventory) {
-        // TODO: skip the header line, then read each line, split on "|",
-        //       create a Product object, and add it to the inventory list
+    public static void loadInventory(String fileName, ArrayList<product> inventory) {
+        try(BufferedReader reader = new BufferedReader(new FileReader(fileName))){
+            reader.readLine(); //skips header in procusts csv
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\\|");
+                //Split because reader reads it as one long string which is also why parse is needed
+
+                String sku = parts [0];
+                String productName = parts [1];
+                double price = Double.parseDouble(parts [2]); //changing price from string to double
+                String department = parts[3];
+                product item =  new product(sku, productName, price, department);
+
+                inventory.add(item); //reads every line and add every product
+            }
+        } catch (IOException e) {
+            System.out.println("Erroe loading inventory: " );
+        }
     }
 
     /**
      * Displays all products and lets the user add one to the cart.
      * Typing X returns to the main menu.
      */
-    public static void displayProducts(ArrayList<Product> inventory,
-                                       ArrayList<Product> cart,
-                                       Scanner scanner) {
+    public static void displayProducts(ArrayList<product> inventory, ArrayList<product> cart, Scanner scanner) {
         // TODO: show each product (id, name, price),
         //       prompt for an id, find that product, add to cart
+        String Sku
+        System.out.println("Enter ID of product desired to add to cart");
     }
 
     /**
      * Shows the contents of the cart, calculates the total,
      * and offers the option to check out.
      */
-    public static void displayCart(ArrayList<Product> cart, Scanner scanner) {
+    public static void displayCart(ArrayList<product> cart, Scanner scanner) {
         // TODO:
         //   • list each product in the cart
         //   • compute the total cost
@@ -95,7 +115,7 @@ public class Store {
      * 3. Display a simple receipt.
      * 4. Clear the cart.
      */
-    public static void checkOut(ArrayList<Product> cart,
+    public static void checkOut(ArrayList<product> cart,
                                 double totalAmount,
                                 Scanner scanner) {
         // TODO: implement steps listed above
@@ -106,7 +126,7 @@ public class Store {
      *
      * @return the matching Product, or null if not found
      */
-    public static Product findProductById(String id, ArrayList<Product> inventory) {
+    public static product findProductById(String id, ArrayList<product> inventory) {
         // TODO: loop over the list and compare ids
         return null;
     }
